@@ -4,11 +4,17 @@
 #include <cstdlib>
 #include <cstring>
 
+#define WIN32_LEAN_AND_MEAN
+#include <Windows.h>
+
 void log(const char* format, ...)
 {
+	char buffer[1024];
 	va_list args;
 	va_start(args, format);
-	printf("[OpenBanapass] ");
-	vprintf(format, args);
+	char fmt[1024] = "[OpenBanapass] ";
+	strcat(fmt, format);
+	vsprintf(buffer, fmt, args);
+	OutputDebugStringA(buffer);
 	va_end(args);
 }
