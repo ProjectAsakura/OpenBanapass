@@ -3,6 +3,9 @@
 
 #define BANA_API_VERSION "Ver 1.6.0"
 
+extern "C"
+{
+
 ULONGLONG BngRwAttach(UINT a1, char* a2, int a3, int a4, void* callback, long a6)
 {
 	log("BngRwAttach()\n");
@@ -161,4 +164,6 @@ int BngRwReqWaitTouch(UINT a, int b, UINT c, ULONGLONG d, ULONGLONG e)
 {
 	log("BngRwReqWaitTouch()\n");
 	return GetAsyncKeyState(VK_RETURN) ? 0 : -1;
+}
+
 }
