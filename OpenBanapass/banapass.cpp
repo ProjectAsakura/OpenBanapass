@@ -163,7 +163,7 @@ int BngRwReqSendUrlTo(UINT a, int b, UINT c, int* d,
 int BngRwReqWaitTouch(UINT a, int b, UINT c, ULONGLONG d, ULONGLONG e)
 {
 	log("BngRwReqWaitTouch()\n");
-	return GetAsyncKeyState(VK_RETURN) ? 0 : -1;
+	return GetAsyncKeyState('C') ? 0 : -1;
 }
 
 }
