@@ -1,9 +1,60 @@
 #include "banapass.h"
 #include "log.h"
+#include <filesystem>
 #include <thread>
 #include <chrono>
 #include <string>
 #define BANA_API_VERSION "Ver 1.6.0"
+
+void randomHex(char str[], int length)
+{
+	//hexadecimal characters
+	char hexCharacterTable[] = { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
+	srand(time(NULL));
+	int i;
+	for (i = 0; i < length; i++)
+	{
+		str[i] = hexCharacterTable[rand() % 16];
+	}
+	str[length] = 0;
+}
+
+void randomNumberString(char str[], int length)
+{
+	char CharacterTable[] = { '0','1','2','3','4','5','6','7','8','9'};
+	srand(time(NULL));
+	int i;
+	for (i = 0; i < length; i++)
+	{
+		str[i] = CharacterTable[rand() % 10];
+	}
+	str[length] = 0;
+}
+
+std::string getProfileString(LPCSTR name, LPCSTR key, LPCSTR def, LPCSTR filename)
+{
+	char temp[1024];
+	int result = GetPrivateProfileStringA(name, key, def, temp, sizeof(temp), filename);
+	return std::string(temp, result);
+}
+
+void createCard() {
+	if (std::filesystem::exists(".\\card.ini")) {
+		log("Card.ini found!\n");
+	}
+	else {
+		//std::string accessCode = "30764352518498791337";
+		//std::string chipId = "7F5C9744F111111143262C3300040610";
+		char generatedAccessCode[33] = "00000000000000000000000000000000";
+		randomHex(generatedAccessCode, 32);
+		WritePrivateProfileStringA("card", "accessCode", generatedAccessCode, ".\\card.ini");
+		char generatedChipId[21] = "00000000000000000000";
+		randomNumberString(generatedChipId, 20);
+		WritePrivateProfileStringA("card", "chipId", generatedChipId, ".\\card.ini");
+		log("New card generated\n");
+	}
+}
+
 
 extern "C"
 {
@@ -11,6 +62,7 @@ extern "C"
 ULONGLONG BngRwAttach(UINT a1, char* a2, int a3, int a4, void* callback, long a6)
 {
 	log("BngRwAttach()\n");
+	createCard();
 	// Do something with the callback perhaps?
 	// Idk what it does
 	return 1;
@@ -185,8 +237,8 @@ int BngRwReqWaitTouch(UINT a, int maxIntSomehow, UINT c, void (*callback)(int, i
 			0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
 		};
 
-		std::string accessCode = "30764352518498791337";
-		std::string chipId = "7F5C9744F111111143262C3300040610";
+		std::string accessCode = getProfileString("card", "accessCode", "30764352518498791337", ".\\card.ini");
+		std::string chipId = getProfileString("card", "chipId", "7F5C9744F111111143262C3300040610", ".\\card.ini");
 
 		memcpy(rawCardData + 0x50, accessCode.c_str(), accessCode.size() + 1);
 		memcpy(rawCardData + 0x2C, chipId.c_str(), chipId.size() + 1);
