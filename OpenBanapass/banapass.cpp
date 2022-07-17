@@ -251,7 +251,7 @@ int BngRwReqWaitTouch(UINT a, int maxIntSomehow, UINT c, void (*callback)(int, i
 
 		// this is a really ugly hack, forgive me
 		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(100ms);
+		std::this_thread::sleep_for(250ms);
 		return 1;
 	}
 	else {
